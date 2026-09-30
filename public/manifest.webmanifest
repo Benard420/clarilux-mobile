@@ -2,7 +2,7 @@
   "name": "Clarilux — oral board practice",
   "short_name": "Clarilux",
   "description": "Book oral board practice with real examiners and sit the mock exam. Concept build.",
-  "start_url": "/home",
+  "start_url": "/dashboard",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f8fafc",

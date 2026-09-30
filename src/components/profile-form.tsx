@@ -6,7 +6,17 @@ import { createClient } from "@/lib/supabase/client";
 import { Button, Chip, Field, Input } from "@/components/ui";
 import type { Profile } from "@/lib/database.types";
 
-const SPECIALTIES = ["Cardiology", "Neurology", "Paediatrics", "General surgery", "Psychiatry", "Emergency medicine", "Obstetrics and gynaecology", "Internal medicine", "Anaesthesia"];
+const SPECIALTIES = [
+  "Cardiology",
+  "Neurology",
+  "Paediatrics",
+  "General surgery",
+  "Psychiatry",
+  "Emergency medicine",
+  "Obstetrics and gynaecology",
+  "Internal medicine",
+  "Anaesthesia",
+];
 const HOURS = [10, 15, 20, 25, 30];
 
 export function ProfileForm({ profile }: { profile: Profile | null }) {
@@ -23,8 +33,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
     if (!profile) return;
     setState("saving");
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase
+    const { error: err } = await createClient()
       .from("profiles")
       .update({
         full_name: name,
@@ -58,7 +67,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
       </Field>
 
       <div className="space-y-2">
-        <p className="text-[13px] font-semibold text-strong">Specialty</p>
+        <p className="t-meta-strong text-strong">Specialty</p>
         <div className="flex flex-wrap gap-2">
           {SPECIALTIES.map((s) => (
             <Chip key={s} active={specialty === s} onClick={() => setSpecialty(s)}>
@@ -77,7 +86,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
       </Field>
 
       <div className="space-y-2">
-        <p className="text-[13px] font-semibold text-strong">Weekly goal</p>
+        <p className="t-meta-strong text-strong">Weekly goal</p>
         <div className="flex flex-wrap gap-2">
           {HOURS.map((h) => (
             <Chip key={h} active={hours === h} onClick={() => setHours(h)}>
@@ -88,7 +97,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
       </div>
 
       {error ? (
-        <p role="alert" className="text-[12.5px] font-medium text-danger">
+        <p role="alert" className="t-caption font-medium text-danger">
           {error}
         </p>
       ) : null}

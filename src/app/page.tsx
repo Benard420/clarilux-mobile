@@ -14,5 +14,5 @@ export default async function Root() {
     .eq("id", data.user.id)
     .maybeSingle();
 
-  redirect(profile?.onboarded ? "/home" : "/onboarding");
+  redirect(profile?.onboarded ? "/dashboard" : "/onboarding");
 }

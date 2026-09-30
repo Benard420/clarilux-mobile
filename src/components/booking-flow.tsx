@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { TopBar } from "@/components/top-bar";
-import { Avatar, Button, Chip, Progress } from "@/components/ui";
+import { BackBar } from "@/components/back-bar";
+import { Avatar, Button, Chip, Meter, Textarea } from "@/components/ui";
 import { dayLabel, money, timeLabel } from "@/lib/format";
 import type { AvailabilitySlot, Examiner, PaymentMethod, SessionType } from "@/lib/database.types";
 
@@ -80,16 +80,16 @@ export function BookingFlow({
 
   return (
     <div className="min-h-dvh bg-page">
-      <TopBar title={`Book ${examiner.full_name}`} subtitle={examiner.institution ?? undefined} />
+      <BackBar title={`Book ${examiner.full_name}`} subtitle={examiner.institution ?? undefined} />
       <main className="mx-auto flex min-h-[calc(100dvh-56px)] w-full max-w-[480px] flex-col px-4 pb-28 pt-4">
-        <Progress value={((step + 1) / STEPS.length) * 100} />
-        <p className="mt-2.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-brand">
+        <Meter value={((step + 1) / STEPS.length) * 100} />
+        <p className="t-label mt-2.5 text-brand">
           Step {step + 1} of {STEPS.length} · {STEPS[step]}
         </p>
 
         {step === 0 && (
           <section className="fade mt-5">
-            <h1 className="text-[22px] font-bold tracking-[-0.025em] text-strong">
+            <h1 className="t-title-l text-strong">
               What kind of session?
             </h1>
             <ul className="mt-4 space-y-2.5">
@@ -101,18 +101,18 @@ export function BookingFlow({
                       type="button"
                       onClick={() => setTypeId(t.id)}
                       aria-pressed={active}
-                      className={`flex w-full gap-3 rounded-2xl border p-4 text-left transition-colors duration-200 ${
+                      className={`flex w-full gap-3 rounded-[12px] border p-4 text-left transition-colors duration-200 ${
                         active ? "border-brand bg-tint" : "border-line bg-surface"
                       }`}
                     >
                       <span className="min-w-0 flex-1">
-                        <span className="block text-[14.5px] font-semibold text-strong">{t.name}</span>
-                        <span className="mt-0.5 block text-[12.5px] leading-snug text-body">{t.description}</span>
-                        <span className="mt-1.5 block text-[12px] font-medium text-muted">
+                        <span className="block t-small-strong text-strong">{t.name}</span>
+                        <span className="mt-0.5 block t-meta text-body">{t.description}</span>
+                        <span className="mt-1.5 block t-caption text-muted">
                           {t.duration_minutes} minutes
                         </span>
                       </span>
-                      <span className="text-[15px] font-bold tracking-[-0.02em] text-strong">
+                      <span className="t-price-m text-strong">
                         {money(t.price_cents, t.currency)}
                       </span>
                     </button>
@@ -125,8 +125,8 @@ export function BookingFlow({
 
         {step === 1 && (
           <section className="fade mt-5">
-            <h1 className="text-[22px] font-bold tracking-[-0.025em] text-strong">Pick a time</h1>
-            <p className="mt-1.5 text-[13px]">Times are shown in your device timezone.</p>
+            <h1 className="t-title-l text-strong">Pick a time</h1>
+            <p className="t-meta mt-1.5 text-body">Times are shown in your device timezone.</p>
             <div className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4">
               {byDay.map(([key, list]) => (
                 <Chip key={key} active={day === key} onClick={() => setDay(key)}>
@@ -143,8 +143,8 @@ export function BookingFlow({
                     type="button"
                     onClick={() => setSlotId(s.id)}
                     aria-pressed={active}
-                    className={`min-h-[48px] rounded-xl border text-[14px] font-semibold transition-colors duration-200 ${
-                      active ? "border-brand bg-brand text-white" : "border-line bg-surface text-strong"
+                    className={`t-small-strong min-h-[48px] rounded-[10px] border transition-colors duration-200 ${
+                      active ? "border-brand bg-brand text-on-brand" : "border-line bg-surface text-strong"
                     }`}
                   >
                     {timeLabel(s.starts_at)}
@@ -160,10 +160,10 @@ export function BookingFlow({
 
         {step === 2 && (
           <section className="fade mt-5">
-            <h1 className="text-[22px] font-bold tracking-[-0.025em] text-strong">
+            <h1 className="t-title-l text-strong">
               Anything you want hit hard?
             </h1>
-            <p className="mt-1.5 text-[13px]">Optional, but examiners use it to pick your stations.</p>
+            <p className="t-meta mt-1.5 text-body">Optional, but examiners use it to pick your stations.</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {topics.map((t) => (
                 <Chip
@@ -176,79 +176,78 @@ export function BookingFlow({
               ))}
             </div>
             <div className="mt-5 space-y-1.5">
-              <label htmlFor="note" className="block text-[13px] font-semibold text-strong">
+              <label htmlFor="note" className="block t-meta-strong text-strong">
                 Note for the examiner
               </label>
-              <textarea
+              <Textarea
                 id="note"
                 rows={4}
                 maxLength={400}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="I keep losing marks on communication stations."
-                className="w-full rounded-xl border border-line bg-surface p-3.5 text-[14.5px] text-strong placeholder:text-muted focus:border-brand focus:outline-none"
               />
-              <p className="text-[12px] text-muted">{note.length} of 400</p>
+              <p className="t-caption text-muted">{note.length} of 400</p>
             </div>
           </section>
         )}
 
         {step === 3 && (
           <section className="fade mt-5">
-            <h1 className="text-[22px] font-bold tracking-[-0.025em] text-strong">Check and confirm</h1>
+            <h1 className="t-title-l text-strong">Check and confirm</h1>
 
-            <div className="mt-4 flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
+            <div className="mt-4 flex items-center gap-3 rounded-[12px] border border-line bg-surface p-4">
               <Avatar name={examiner.full_name} size={44} />
               <div className="min-w-0">
-                <p className="truncate text-[14.5px] font-semibold text-strong">{examiner.full_name}</p>
-                <p className="text-[12.5px] text-muted">{examiner.institution}</p>
+                <p className="truncate t-small-strong text-strong">{examiner.full_name}</p>
+                <p className="t-caption text-muted">{examiner.institution}</p>
               </div>
             </div>
 
-            <dl className="mt-3 divide-y divide-divider overflow-hidden rounded-2xl border border-line bg-surface">
+            <dl className="mt-3 divide-y divide-line-subtle overflow-hidden rounded-[12px] border border-line bg-surface">
               {[
                 ["Session", type ? `${type.name} · ${type.duration_minutes} min` : "Not set"],
                 ["When", slot ? `${dayLabel(slot.starts_at)} at ${timeLabel(slot.starts_at)}` : "Not set"],
                 ["Focus", focus.length ? focus.join(", ") : "Examiner's choice"],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-start justify-between gap-4 px-4 py-3.5">
-                  <dt className="text-[13px] text-body">{k}</dt>
-                  <dd className="max-w-[60%] text-right text-[13.5px] font-semibold text-strong">{v}</dd>
+                  <dt className="t-meta text-body">{k}</dt>
+                  <dd className="t-small-strong max-w-[60%] text-right text-strong">{v}</dd>
                 </div>
               ))}
             </dl>
 
-            <div className="mt-3 rounded-2xl border border-line bg-surface p-4">
-              <p className="text-[13px] font-semibold text-strong">Paying with</p>
+            <div className="mt-3 rounded-[12px] border border-line bg-surface p-4">
+              <p className="t-small-strong text-strong">Paying with</p>
               {card ? (
-                <p className="mt-1.5 text-[13.5px]">
+                <p className="t-meta mt-1.5 text-body">
                   {card.brand} ending {card.last4}
-                  <span className="ml-2 text-[12px] text-muted">
+                  <span className="t-caption ml-2 text-muted">
                     {card.exp_month}/{String(card.exp_year).slice(-2)}
                   </span>
                 </p>
               ) : (
-                <p className="mt-1.5 text-[13px] text-body">
+                <p className="t-meta mt-1.5 text-body">
                   No card on file. Add one in your profile first. No real charge is made in this concept
                   build.
                 </p>
               )}
             </div>
 
-            <div className="mt-3 flex items-center justify-between rounded-2xl bg-tint px-4 py-3.5">
-              <span className="text-[13.5px] font-semibold text-strong">Total</span>
-              <span className="text-[19px] font-bold tracking-[-0.02em] text-brand">
+            <div className="mt-3 flex items-center justify-between rounded-[12px] bg-tint px-4 py-3.5">
+              <span className="t-small-strong text-strong">Total</span>
+              <span className="t-price-l text-brand">
                 {type ? money(type.price_cents, type.currency) : "—"}
               </span>
             </div>
 
-            <p className="mt-3 text-[12px] leading-relaxed text-muted">
+            <p className="t-caption mt-3 text-muted">
               Free cancellation up to twelve hours before. This is a concept build, so nothing is
               charged and no examiner is notified.
             </p>
 
             {error ? (
-              <p role="alert" className="mt-3 text-[12.5px] font-medium text-danger">
+              <p role="alert" className="t-caption mt-3 font-medium text-danger">
                 {error}
               </p>
             ) : null}
@@ -257,7 +256,7 @@ export function BookingFlow({
 
         <div className="mt-auto flex gap-2.5 pt-8">
           {step > 0 ? (
-            <Button variant="secondary" className="!w-auto flex-1" onClick={() => setStep((s) => s - 1)}>
+            <Button tone="secondary" className="!w-auto flex-1" onClick={() => setStep((s) => s - 1)}>
               Back
             </Button>
           ) : null}

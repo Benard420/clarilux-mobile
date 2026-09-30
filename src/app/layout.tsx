@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
         />
-        <script
+        <script suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem('clarilux-theme');if(t&&t!=='system')document.documentElement.setAttribute('data-theme',t)}catch(e){}`,
           }}

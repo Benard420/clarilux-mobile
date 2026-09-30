@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Button, Chip, Field, Input, Progress } from "@/components/ui";
+import { Button, Chip, Field, Input, Meter } from "@/components/ui";
 
 const SPECIALTIES = [
   "Cardiology",
@@ -60,25 +60,25 @@ export default function Onboarding() {
       setBusy(false);
       return;
     }
-    router.replace("/home");
+    router.replace("/dashboard");
     router.refresh();
   }
 
   return (
     <main className="rise flex min-h-[calc(100dvh-140px)] flex-col">
       <div className="space-y-3">
-        <Progress value={((step + 1) / STEPS.length) * 100} />
-        <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-brand">
+        <Meter value={((step + 1) / STEPS.length) * 100} />
+        <p className="t-label text-brand">
           Step {step + 1} of {STEPS.length} · {STEPS[step]}
         </p>
       </div>
 
       {step === 0 && (
         <section key="s0" className="fade mt-6">
-          <h1 className="text-[26px] font-bold leading-tight tracking-[-0.025em] text-strong">
+          <h1 className="t-display text-strong">
             What are you examining in?
           </h1>
-          <p className="mt-2 text-[14px]">This decides which examiners we put in front of you.</p>
+          <p className="t-body mt-2 text-body">This decides which examiners we put in front of you.</p>
           <div className="mt-6 flex flex-wrap gap-2">
             {SPECIALTIES.map((s) => (
               <Chip key={s} active={specialty === s} onClick={() => setSpecialty(s)}>
@@ -92,10 +92,10 @@ export default function Onboarding() {
       {step === 1 && (
         <section key="s1" className="fade mt-6 space-y-6">
           <div>
-            <h1 className="text-[26px] font-bold leading-tight tracking-[-0.025em] text-strong">
+            <h1 className="t-display text-strong">
               Which exam, and when?
             </h1>
-            <p className="mt-2 text-[14px]">We work backwards from the date to pace your mocks.</p>
+            <p className="t-body mt-2 text-body">We work backwards from the date to pace your mocks.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {BOARDS.map((b) => (
@@ -112,10 +112,10 @@ export default function Onboarding() {
 
       {step === 2 && (
         <section key="s2" className="fade mt-6">
-          <h1 className="text-[26px] font-bold leading-tight tracking-[-0.025em] text-strong">
+          <h1 className="t-display text-strong">
             How many hours a week?
           </h1>
-          <p className="mt-2 text-[14px]">
+          <p className="t-body mt-2 text-body">
             Be honest rather than ambitious. We use it to set your readiness score, not to judge you.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -125,9 +125,9 @@ export default function Onboarding() {
               </Chip>
             ))}
           </div>
-          <div className="mt-6 rounded-2xl border border-line bg-surface p-4">
-            <p className="text-[13px] font-semibold text-strong">At {hours} hours a week</p>
-            <p className="mt-1 text-[13px] leading-relaxed">
+          <div className="mt-6 rounded-[12px] border border-line bg-surface p-4">
+            <p className="t-small-strong text-strong">At {hours} hours a week</p>
+            <p className="t-meta mt-1 text-body">
               Two focused vivas and one full mock a month keeps you sharp without eating your rota.
             </p>
           </div>
@@ -136,11 +136,11 @@ export default function Onboarding() {
 
       {step === 3 && (
         <section key="s3" className="fade mt-6">
-          <h1 className="text-[26px] font-bold leading-tight tracking-[-0.025em] text-strong">
+          <h1 className="t-display text-strong">
             That is everything.
           </h1>
-          <p className="mt-2 text-[14px]">Here is what we have. You can change any of it later.</p>
-          <dl className="mt-6 divide-y divide-divider overflow-hidden rounded-2xl border border-line bg-surface">
+          <p className="t-body mt-2 text-body">Here is what we have. You can change any of it later.</p>
+          <dl className="mt-6 divide-y divide-line-subtle overflow-hidden rounded-[12px] border border-line bg-surface">
             {[
               ["Specialty", specialty ?? "Not set"],
               ["Target exam", board ?? "Not set"],
@@ -148,13 +148,13 @@ export default function Onboarding() {
               ["Weekly goal", `${hours} hours`],
             ].map(([k, v]) => (
               <div key={k} className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <dt className="text-[13px] text-body">{k}</dt>
-                <dd className="text-[13.5px] font-semibold text-strong">{v}</dd>
+                <dt className="t-meta text-body">{k}</dt>
+                <dd className="t-small-strong text-strong">{v}</dd>
               </div>
             ))}
           </dl>
           {error ? (
-            <p role="alert" className="mt-3 text-[12.5px] font-medium text-danger">
+            <p role="alert" className="t-caption mt-3 font-medium text-danger">
               {error}
             </p>
           ) : null}
@@ -163,7 +163,7 @@ export default function Onboarding() {
 
       <div className="mt-auto flex gap-2.5 pt-10">
         {step > 0 ? (
-          <Button variant="secondary" className="!w-auto flex-1" onClick={() => setStep((s) => s - 1)}>
+          <Button tone="secondary" className="!w-auto flex-1" onClick={() => setStep((s) => s - 1)}>
             Back
           </Button>
         ) : null}

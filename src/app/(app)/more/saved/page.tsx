@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { TopBar } from "@/components/top-bar";
+import { BackBar } from "@/components/back-bar";
 import { ExaminerCard } from "@/components/examiner-card";
 import { ButtonLink, Empty } from "@/components/ui";
 import type { Examiner } from "@/lib/database.types";
 
 export const dynamic = "force-dynamic";
 
-export default async function Saved() {
+export default async function SavedPage() {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) redirect("/welcome");
@@ -23,8 +23,8 @@ export default async function Saved() {
 
   return (
     <>
-      <TopBar title="Saved examiners" />
-      <main className="px-4 pb-10 pt-5">
+      <BackBar title="Saved examiners" subtitle={`${rows.length} saved`} />
+      <main className="px-4 pt-4">
         {rows.length ? (
           <div className="space-y-3">
             {rows.map((e) => (
@@ -36,7 +36,7 @@ export default async function Saved() {
             title="Nothing saved"
             body="Save the examiners whose feedback actually moves your score, so rebooking takes one tap."
             action={
-              <ButtonLink href="/discover" size="md" className="mt-1">
+              <ButtonLink href="/marketplace" size="md" className="mt-1">
                 Browse examiners
               </ButtonLink>
             }

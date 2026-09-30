@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { TopBar } from "@/components/top-bar";
-import { Avatar, Badge, Empty, Progress } from "@/components/ui";
+import { BackBar } from "@/components/back-bar";
+import { Avatar, Empty, Meter, Pill } from "@/components/ui";
 import { mmss } from "@/lib/format";
 import type { BookingWithExaminer, ExamQuestion, SessionReport } from "@/lib/database.types";
 
@@ -48,7 +48,7 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
   if (!report) {
     return (
       <>
-        <TopBar title="Report" />
+        <BackBar title="Report" />
         <main className="mx-auto w-full max-w-[480px] px-4 pt-8">
           <Empty
             title="No report yet"
@@ -56,7 +56,7 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
           />
           <Link
             href={`/room/${bookingId}`}
-            className="mt-4 flex min-h-[52px] items-center justify-center rounded-xl bg-brand text-[15px] font-semibold text-white"
+            className="t-button mt-4 flex min-h-[52px] items-center justify-center rounded-[12px] bg-brand text-on-brand"
           >
             Back to the room
           </Link>
@@ -70,46 +70,46 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
 
   return (
     <>
-      <TopBar title="Session report" subtitle={b.examiners?.full_name ?? undefined} />
+      <BackBar title="Session report" subtitle={b.examiners?.full_name ?? undefined} />
       <main className="mx-auto w-full max-w-[480px] px-4 pb-14 pt-5">
-        <section className="rise rounded-2xl border border-line bg-surface p-5 text-center">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-muted">Overall</p>
-          <p className="mt-1 text-[52px] font-bold leading-none tracking-[-0.04em] text-strong">
+        <section className="rise rounded-[12px] border border-line bg-surface p-5 text-center">
+          <p className="t-label text-muted">Overall</p>
+          <p className="mt-2 text-[56px] font-bold leading-[58px] tracking-[-1.5px] text-strong">
             {r.overall_score}
-            <span className="text-[20px] font-semibold text-muted"> / 100</span>
+            <span className="t-body block text-muted">out of 100</span>
           </p>
           <div className="mt-3">
-            <Badge tone={pass ? "success" : "warn"}>{r.verdict}</Badge>
+            <Pill tone={pass ? "success" : "warning"}>{r.verdict}</Pill>
           </div>
-          <p className="mt-3 text-[12.5px] text-muted">
+          <p className="t-caption mt-3 text-muted">
             {questions?.length ?? 0} stations ·{" "}
             {session?.duration_seconds ? mmss(session.duration_seconds) : "—"} in the room
           </p>
         </section>
 
-        <section className="mt-4 space-y-4 rounded-2xl border border-line bg-surface p-5">
-          <h2 className="text-[15px] font-semibold text-strong">By domain</h2>
+        <section className="mt-3 space-y-4 rounded-[12px] border border-line bg-surface p-4">
+          <h2 className="t-title-s text-strong">By domain</h2>
           {DOMAINS.map(([label, key]) => (
-            <Progress key={key} value={(r[key] as number | null) ?? 0} label={label} />
+            <Meter key={key} value={(r[key] as number | null) ?? 0} label={label} />
           ))}
         </section>
 
         {r.examiner_notes ? (
-          <section className="mt-4 flex gap-3.5 rounded-2xl border border-line bg-tint p-4">
+          <section className="mt-3 flex gap-3.5 rounded-[12px] border border-line bg-tint p-4">
             <Avatar name={b.examiners?.full_name ?? "Examiner"} size={40} />
             <div className="min-w-0">
-              <p className="text-[13px] font-semibold text-strong">{b.examiners?.full_name}</p>
-              <p className="mt-1 text-[13.5px] leading-relaxed text-body">{r.examiner_notes}</p>
+              <p className="t-meta-strong text-strong">{b.examiners?.full_name}</p>
+              <p className="t-small mt-1 text-body">{r.examiner_notes}</p>
             </div>
           </section>
         ) : null}
 
         {r.strengths?.length ? (
-          <section className="mt-4 rounded-2xl border border-line bg-surface p-5">
-            <h2 className="text-[15px] font-semibold text-strong">What worked</h2>
-            <ul className="mt-2.5 space-y-2">
+          <section className="mt-3 rounded-[12px] border border-line bg-surface p-4">
+            <h2 className="t-title-s text-strong">What worked</h2>
+            <ul className="mt-2.5 space-y-2.5">
               {r.strengths.map((s) => (
-                <li key={s} className="flex gap-2.5 text-[13.5px] leading-relaxed">
+                <li key={s} className="t-small flex gap-2.5 text-body">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-success">
                     <path d="M5 13l4.5 4.5L19 7" />
                   </svg>
@@ -121,14 +121,14 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
         ) : null}
 
         {r.improvements?.length ? (
-          <section className="mt-4 rounded-2xl border border-line bg-surface p-5">
+          <section className="mt-3 rounded-[12px] border border-line bg-surface p-4">
             <h2 className="text-[15px] font-semibold text-strong">
               {r.improvements.length === 1 ? "Fix this" : `Fix these ${r.improvements.length === 2 ? "two" : r.improvements.length === 3 ? "three" : r.improvements.length} things`}
             </h2>
             <ol className="mt-2.5 space-y-3">
               {r.improvements.map((s, i) => (
-                <li key={s} className="flex gap-3 text-[13.5px] leading-relaxed">
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-tint text-[12px] font-bold text-brand">
+                <li key={s} className="t-small flex gap-3 text-body">
+                  <span className="t-caption-medium grid size-6 shrink-0 place-items-center rounded-full bg-tint text-brand">
                     {i + 1}
                   </span>
                   {s}
@@ -139,19 +139,19 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
         ) : null}
 
         {questions?.length ? (
-          <section className="mt-4 rounded-2xl border border-line bg-surface p-5">
-            <h2 className="text-[15px] font-semibold text-strong">Station by station</h2>
-            <ul className="mt-3 divide-y divide-divider">
+          <section className="mt-3 rounded-[12px] border border-line bg-surface p-4">
+            <h2 className="t-title-s text-strong">Station by station</h2>
+            <ul className="mt-3 divide-y divide-line-subtle">
               {(questions as ExamQuestion[]).map((q) => (
                 <li key={q.id} className="py-3.5 first:pt-0 last:pb-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">
+                  <p className="t-label uppercase text-muted">
                     {q.domain}
                   </p>
-                  <p className="mt-1 text-[13.5px] font-medium leading-snug text-strong">{q.prompt}</p>
-                  <p className="mt-1.5 text-[12.5px] leading-relaxed">
+                  <p className="t-small-strong mt-1 text-strong">{q.prompt}</p>
+                  <p className="t-meta mt-1.5 text-body">
                     {q.response_text ? q.response_text : "No answer given."}
                   </p>
-                  <p className="mt-1.5 text-[11.5px] text-muted">
+                  <p className="t-caption mt-1.5 text-muted">
                     {q.response_seconds ? mmss(q.response_seconds) : "—"} used of{" "}
                     {mmss(q.expected_seconds ?? 120)}
                     {q.response_seconds && q.expected_seconds && q.response_seconds > q.expected_seconds
@@ -165,14 +165,14 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
         ) : null}
 
         {r.recommended_next ? (
-          <section className="mt-4 rounded-2xl bg-brand p-5 text-white">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/70">
+          <section className="mt-3 rounded-[12px] bg-brand p-5 text-on-brand">
+            <p className="t-label text-on-brand-muted">
               What to do next
             </p>
-            <p className="mt-1.5 text-[15px] font-semibold leading-snug">{r.recommended_next}</p>
+            <p className="t-title-s mt-1.5">{r.recommended_next}</p>
             <Link
-              href="/discover"
-              className="mt-4 flex min-h-[46px] items-center justify-center rounded-xl bg-white text-[14px] font-semibold text-brand active:scale-[0.98]"
+              href="/marketplace"
+              className="t-button mt-4 flex min-h-[48px] items-center justify-center rounded-[12px] bg-surface text-brand active:scale-[0.98]"
             >
               Book the next session
             </Link>
@@ -180,8 +180,8 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
         ) : null}
 
         <Link
-          href="/bookings"
-          className="mt-4 flex min-h-[52px] items-center justify-center rounded-xl border border-line bg-surface text-[15px] font-semibold text-strong active:scale-[0.98]"
+          href="/oral-board"
+          className="t-button mt-3 flex min-h-[52px] items-center justify-center rounded-[12px] border border-line bg-surface text-strong active:scale-[0.98]"
         >
           Back to my sessions
         </Link>

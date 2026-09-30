@@ -1,116 +1,222 @@
 @import "tailwindcss";
 
-@theme {
-  --color-page: #f8fafc;
-  --color-surface: #ffffff;
-  --color-sunken: #f1f5f9;
-  --color-line: #e2e8f0;
-  --color-divider: #edf0f3;
-  --color-strong: #111827;
-  --color-body: #475569;
-  --color-muted: #94a3b8;
-  --color-brand: #1e40af;
-  --color-brand-press: #1b3a9c;
-  --color-brand-ink: #0b1b4d;
-  --color-tint: #ebf4ff;
-  --color-amber: #c78423;
-  --color-success: #047857;
-  --color-success-bg: #ecfdf5;
-  --color-danger: #b42318;
-  --color-danger-bg: #fef3f2;
-
-  --radius-card: 16px;
-  --radius-sheet: 24px;
-
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
+/* Tokens mirror the Clarilux · Color and Clarilux · Spacing collections in Figma. */
 :root {
   color-scheme: light dark;
+
   --page: #f8fafc;
   --surface: #ffffff;
   --sunken: #f1f5f9;
+  --brand-subtle: #ebf4ff;
+  --selected: #f5f8ff;
+  --scrim: #0b1b4d;
+
   --line: #e2e8f0;
-  --divider: #edf0f3;
+  --line-subtle: #edf0f3;
+  --line-strong: #cbd5e1;
+
   --strong: #111827;
   --body: #475569;
+  --secondary: #64748b;
   --muted: #94a3b8;
+  --on-brand: #ffffff;
+
   --brand: #1e40af;
-  --tint: #ebf4ff;
+  --brand-pressed: #2547b4;
+  --brand-ink: #0b1b4d;
+  --on-brand-muted: #c7d7f5;
+
   --amber: #c78423;
   --success: #047857;
-  --success-bg: #ecfdf5;
-  --danger: #b42318;
-  --danger-bg: #fef3f2;
+  --success-surface: #ecfdf5;
+  --warning: #b45309;
+  --warning-surface: #fffbeb;
+  --danger: #b91c1c;
+  --danger-surface: #fef2f2;
+
+  --disabled-surface: #e7ebf0;
+  --disabled-text: #a7b0bc;
+  --toggle-track: #f1f5f9;
+  --toggle-knob: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --page: #0b1220;
-    --surface: #111c33;
-    --sunken: #16213b;
-    --line: #1e293b;
-    --divider: #1a2740;
-    --strong: #f8fafc;
-    --body: #cbd5e1;
-    --muted: #64748b;
-    --brand: #60a5fa;
-    --tint: #172554;
-    --amber: #e0a94f;
+    --surface: #131c2e;
+    --sunken: #1d283c;
+    --brand-subtle: #17253f;
+    --selected: #16223a;
+    --scrim: #01060f;
+
+    --line: #26324a;
+    --line-subtle: #1b2536;
+    --line-strong: #3a4863;
+
+    --strong: #f1f5f9;
+    --body: #b4c0d0;
+    --secondary: #9aa8ba;
+    --muted: #7c8ca2;
+
+    --brand: #4f7ce8;
+    --brand-pressed: #6b92ef;
+    --brand-ink: #dce5f8;
+    --on-brand-muted: #a8c0f2;
+
+    --amber: #e8a33d;
     --success: #34d399;
-    --success-bg: #04231c;
+    --success-surface: #0f2b22;
+    --warning: #f0b45c;
+    --warning-surface: #2e2413;
     --danger: #f87171;
-    --danger-bg: #2a1210;
+    --danger-surface: #2b1414;
+
+    --disabled-surface: #212c40;
+    --disabled-text: #5c6a80;
+    --toggle-track: #1d283c;
+    --toggle-knob: #2b3a55;
   }
 }
 
 :root[data-theme="dark"] {
   --page: #0b1220;
-  --surface: #111c33;
-  --sunken: #16213b;
-  --line: #1e293b;
-  --divider: #1a2740;
-  --strong: #f8fafc;
-  --body: #cbd5e1;
-  --muted: #64748b;
-  --brand: #60a5fa;
-  --tint: #172554;
-  --amber: #e0a94f;
+  --surface: #131c2e;
+  --sunken: #1d283c;
+  --brand-subtle: #17253f;
+  --selected: #16223a;
+  --scrim: #01060f;
+  --line: #26324a;
+  --line-subtle: #1b2536;
+  --line-strong: #3a4863;
+  --strong: #f1f5f9;
+  --body: #b4c0d0;
+  --secondary: #9aa8ba;
+  --muted: #7c8ca2;
+  --brand: #4f7ce8;
+  --brand-pressed: #6b92ef;
+  --brand-ink: #dce5f8;
+  --on-brand-muted: #a8c0f2;
+  --amber: #e8a33d;
   --success: #34d399;
-  --success-bg: #04231c;
+  --success-surface: #0f2b22;
+  --warning: #f0b45c;
+  --warning-surface: #2e2413;
   --danger: #f87171;
-  --danger-bg: #2a1210;
+  --danger-surface: #2b1414;
+  --disabled-surface: #212c40;
+  --disabled-text: #5c6a80;
+  --toggle-track: #1d283c;
+  --toggle-knob: #2b3a55;
 }
 
 @theme inline {
   --color-page: var(--page);
   --color-surface: var(--surface);
   --color-sunken: var(--sunken);
+  --color-tint: var(--brand-subtle);
+  --color-selected: var(--selected);
+  --color-scrim: var(--scrim);
+
   --color-line: var(--line);
-  --color-divider: var(--divider);
+  --color-line-subtle: var(--line-subtle);
+  --color-line-strong: var(--line-strong);
+
   --color-strong: var(--strong);
   --color-body: var(--body);
+  --color-secondary: var(--secondary);
   --color-muted: var(--muted);
+  --color-on-brand: var(--on-brand);
+
   --color-brand: var(--brand);
-  --color-tint: var(--tint);
+  --color-brand-pressed: var(--brand-pressed);
+  --color-brand-ink: var(--brand-ink);
+  --color-on-brand-muted: var(--on-brand-muted);
+
   --color-amber: var(--amber);
   --color-success: var(--success);
-  --color-success-bg: var(--success-bg);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
   --color-danger: var(--danger);
-  --color-danger-bg: var(--danger-bg);
+  --color-danger-surface: var(--danger-surface);
+
+  --color-disabled-surface: var(--disabled-surface);
+  --color-disabled-text: var(--disabled-text);
+  --color-toggle-track: var(--toggle-track);
+  --color-toggle-knob: var(--toggle-knob);
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-sheet: 24px;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 
 body {
   background: var(--page);
   color: var(--body);
-  font-family: var(--font-sans);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
 }
 
-* { -webkit-tap-highlight-color: transparent; }
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The Figma type ramp, one class per style. */
+.t-display      { font-size: 25px; line-height: 32px; font-weight: 700; }
+.t-title-l      { font-size: 21px; line-height: 28px; font-weight: 600; }
+.t-title-m      { font-size: 19px; line-height: 26px; font-weight: 600; }
+.t-title-s      { font-size: 16px; line-height: 22px; font-weight: 600; }
+.t-body         { font-size: 15px; line-height: 22px; font-weight: 400; }
+.t-body-medium  { font-size: 15px; line-height: 21px; font-weight: 500; }
+.t-body-strong  { font-size: 15px; line-height: 20px; font-weight: 600; }
+.t-small        { font-size: 14px; line-height: 20px; font-weight: 400; }
+.t-small-medium { font-size: 14px; line-height: 20px; font-weight: 500; }
+.t-small-strong { font-size: 14px; line-height: 19px; font-weight: 600; }
+.t-meta         { font-size: 13px; line-height: 18px; font-weight: 400; }
+.t-meta-medium  { font-size: 13px; line-height: 18px; font-weight: 500; }
+.t-meta-strong  { font-size: 13px; line-height: 18px; font-weight: 600; }
+.t-caption      { font-size: 12px; line-height: 16px; font-weight: 400; }
+.t-caption-medium { font-size: 12px; line-height: 16px; font-weight: 500; }
+.t-label        { font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 1.2px; }
+.t-tab          { font-size: 11px; line-height: 14px; font-weight: 500; }
+.t-price-l      { font-size: 20px; line-height: 26px; font-weight: 700; }
+.t-price-m      { font-size: 18px; line-height: 24px; font-weight: 700; }
+.t-price-s      { font-size: 15px; line-height: 20px; font-weight: 700; }
+.t-button       { font-size: 16px; line-height: 21px; font-weight: 600; }
+.t-badge        { font-size: 11px; line-height: 16px; font-weight: 700; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 300ms cubic-bezier(0.2, 0, 0, 1) both; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.fade { animation: fade 200ms ease-out both; }
+
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.skeleton { position: relative; overflow: hidden; background: var(--sunken); }
+.skeleton::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(30 64 175 / 0.3); }
+  70% { box-shadow: 0 0 0 14px rgb(30 64 175 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(30 64 175 / 0); }
+}
+.pulse-ring { animation: pulse-ring 2s infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -118,27 +224,3 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { scrollbar-width: none; }
-
-@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.rise { animation: rise 320ms cubic-bezier(0.2, 0, 0, 1) both; }
-
-@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-.fade { animation: fade 220ms ease-out both; }
-
-@keyframes shimmer { 100% { transform: translateX(100%); } }
-.skeleton { position: relative; overflow: hidden; background: var(--sunken); }
-.skeleton::after {
-  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent);
-  animation: shimmer 1.4s infinite;
-}
-
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgb(30 64 175 / 0.32); }
-  70% { box-shadow: 0 0 0 16px rgb(30 64 175 / 0); }
-  100% { box-shadow: 0 0 0 0 rgb(30 64 175 / 0); }
-}
-.pulse-ring { animation: pulse-ring 2s infinite; }

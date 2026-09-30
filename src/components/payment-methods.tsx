@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Button, Empty, Field, Input } from "@/components/ui";
+import { Button, Card, Empty, Field, Input } from "@/components/ui";
 import type { PaymentMethod } from "@/lib/database.types";
 
 const BRANDS = ["Visa", "Mastercard", "Amex", "Verve"];
@@ -25,8 +25,7 @@ export function PaymentMethods({ cards, profileId }: { cards: PaymentMethod[]; p
     }
     setBusy(true);
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.from("payment_methods").insert({
+    const { error: err } = await createClient().from("payment_methods").insert({
       profile_id: profileId,
       brand,
       last4,
@@ -53,54 +52,50 @@ export function PaymentMethods({ cards, profileId }: { cards: PaymentMethod[]; p
   }
 
   return (
-    <div>
-      <p className="rounded-xl border border-line bg-tint px-3.5 py-2.5 text-[12px] leading-relaxed text-brand">
-        Concept build. Nothing is charged and no card network is contacted. Enter only the last four
-        digits of a card, never a full number.
-      </p>
+    <div className="space-y-3">
+      <Card tone="tint">
+        <p className="t-caption text-brand">
+          Concept build. Nothing is charged and no card network is contacted. Enter only the last four
+          digits of a card, never a full number.
+        </p>
+      </Card>
 
       {cards.length ? (
-        <ul className="mt-4 space-y-2.5">
+        <ul className="space-y-3">
           {cards.map((c) => (
-            <li key={c.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
-              <span className="grid h-9 w-13 place-items-center rounded-md bg-brand-ink px-2.5 text-[10.5px] font-bold uppercase tracking-wider text-white">
+            <Card key={c.id} as="li" className="flex items-center gap-3">
+              <span className="t-badge grid h-8 w-[46px] place-items-center rounded-[6px] bg-brand-ink uppercase tracking-wider text-white">
                 {c.brand.slice(0, 4)}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[14px] font-semibold text-strong">
+                <p className="t-small-strong text-strong">
                   {c.brand} ending {c.last4}
                 </p>
-                <p className="text-[12px] text-muted">
-                  {c.exp_month && c.exp_year ? `Expires ${c.exp_month}/${String(c.exp_year).slice(-2)}` : "No expiry set"}
+                <p className="t-caption text-muted">
+                  {c.exp_month && c.exp_year
+                    ? `Expires ${c.exp_month}/${String(c.exp_year).slice(-2)}`
+                    : "No expiry set"}
                   {c.is_default ? " · Default" : ""}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => void remove(c.id)}
-                className="min-h-[40px] rounded-lg px-3 text-[12.5px] font-semibold text-danger"
+                className="t-meta-strong min-h-[40px] rounded-lg px-2 text-danger"
               >
                 Remove
               </button>
-            </li>
+            </Card>
           ))}
         </ul>
       ) : (
-        <div className="mt-4">
-          <Empty title="No card on file" body="Add one so booking takes a single tap. Sample data only." />
-        </div>
+        <Empty title="No card on file" body="Add one so booking takes a single tap. Sample data only." />
       )}
 
       {adding ? (
-        <form
-          className="rise mt-4 space-y-4 rounded-2xl border border-line bg-surface p-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void add();
-          }}
-        >
+        <Card as="section" className="rise space-y-4">
           <div className="space-y-2">
-            <p className="text-[13px] font-semibold text-strong">Brand</p>
+            <p className="t-meta-strong text-strong">Brand</p>
             <div className="flex flex-wrap gap-2">
               {BRANDS.map((b) => (
                 <button
@@ -108,8 +103,8 @@ export function PaymentMethods({ cards, profileId }: { cards: PaymentMethod[]; p
                   type="button"
                   onClick={() => setBrand(b)}
                   aria-pressed={brand === b}
-                  className={`min-h-[36px] rounded-full border px-3.5 text-[13px] font-medium ${
-                    brand === b ? "border-brand bg-brand text-white" : "border-line text-body"
+                  className={`t-meta-medium min-h-[36px] rounded-full border px-3.5 ${
+                    brand === b ? "border-brand bg-brand text-on-brand" : "border-line text-body"
                   }`}
                 >
                   {b}
@@ -143,20 +138,18 @@ export function PaymentMethods({ cards, profileId }: { cards: PaymentMethod[]; p
           </div>
 
           <div className="flex gap-2.5">
-            <Button variant="secondary" size="md" className="flex-1" onClick={() => setAdding(false)}>
+            <Button tone="secondary" size="md" className="flex-1" onClick={() => setAdding(false)}>
               Cancel
             </Button>
-            <Button type="submit" size="md" className="flex-1" disabled={busy}>
+            <Button size="md" className="flex-1" disabled={busy} onClick={() => void add()}>
               {busy ? "Saving" : "Save card"}
             </Button>
           </div>
-        </form>
+        </Card>
       ) : (
-        <div className="mt-4">
-          <Button variant="secondary" onClick={() => setAdding(true)}>
-            Add a card
-          </Button>
-        </div>
+        <Button tone="secondary" onClick={() => setAdding(true)}>
+          Add a card
+        </Button>
       )}
     </div>
   );

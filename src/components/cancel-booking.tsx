@@ -21,34 +21,34 @@ export function CancelBooking({ bookingId }: { bookingId: string }) {
       setBusy(false);
       return;
     }
-    router.replace("/bookings");
+    router.replace("/oral-board");
     router.refresh();
   }
 
   if (!confirming) {
     return (
-      <Button variant="secondary" onClick={() => setConfirming(true)}>
+      <Button tone="secondary" onClick={() => setConfirming(true)}>
         Cancel this session
       </Button>
     );
   }
 
   return (
-    <div className="rise rounded-2xl border border-danger/25 bg-danger-bg p-4">
-      <p className="text-[13.5px] font-semibold text-strong">Cancel this session?</p>
-      <p className="mt-1 text-[12.5px] leading-relaxed text-body">
+    <div className="rise rounded-[12px] border border-danger/25 bg-danger-surface p-4">
+      <p className="t-small-strong text-strong">Cancel this session?</p>
+      <p className="t-meta mt-1 text-body">
         The slot goes back to the examiner and your payment is refunded. You can rebook any time.
       </p>
       {error ? (
-        <p role="alert" className="mt-2 text-[12.5px] font-medium text-danger">
+        <p role="alert" className="t-caption mt-2 font-medium text-danger">
           {error}
         </p>
       ) : null}
       <div className="mt-3 flex gap-2">
-        <Button variant="secondary" size="md" className="flex-1" onClick={() => setConfirming(false)}>
+        <Button tone="secondary" size="md" className="flex-1" onClick={() => setConfirming(false)}>
           Keep it
         </Button>
-        <Button variant="danger" size="md" className="flex-1" disabled={busy} onClick={() => void cancel()}>
+        <Button tone="danger" size="md" className="flex-1" disabled={busy} onClick={() => void cancel()}>
           {busy ? "Cancelling" : "Yes, cancel"}
         </Button>
       </div>

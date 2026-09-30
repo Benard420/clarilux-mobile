@@ -2,26 +2,28 @@
 
 import { useMemo, useState } from "react";
 import { ExaminerCard } from "@/components/examiner-card";
+import { ChevronDown, Funnel, Search } from "@/components/icons";
 import { Chip, Empty, Input } from "@/components/ui";
 import type { Examiner, Topic } from "@/lib/database.types";
 
 type Row = Examiner & { topics: string[] };
 
 const SORTS = [
-  { key: "rating", label: "Rating" },
-  { key: "price", label: "Price" },
-  { key: "experience", label: "Experience" },
+  { key: "rating", label: "Top rated" },
+  { key: "price", label: "Lowest price" },
+  { key: "experience", label: "Most experienced" },
 ] as const;
 
 export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: Topic[] }) {
   const [q, setQ] = useState("");
-  const [topic, setTopic] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
   const [sort, setSort] = useState<(typeof SORTS)[number]["key"]>("rating");
+  const [sortOpen, setSortOpen] = useState(false);
 
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    let rows = examiners.filter((e) => {
-      const matchesTopic = !topic || e.topics.includes(topic);
+    const rows = examiners.filter((e) => {
+      const matchesTopic = !picked.length || picked.some((p) => e.topics.includes(p));
       const matchesText =
         !needle ||
         [e.full_name, e.institution, e.headline, ...e.topics]
@@ -29,80 +31,98 @@ export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: 
           .some((v) => String(v).toLowerCase().includes(needle));
       return matchesTopic && matchesText;
     });
-    rows = [...rows].sort((a, b) => {
+    return [...rows].sort((a, b) => {
       if (sort === "price") return a.from_price_cents - b.from_price_cents;
       if (sort === "experience") return (b.years_experience ?? 0) - (a.years_experience ?? 0);
       return (b.rating ?? 0) - (a.rating ?? 0);
     });
-    return rows;
-  }, [examiners, q, topic, sort]);
+  }, [examiners, q, picked, sort]);
+
+  const toggle = (name: string) =>
+    setPicked((p) => (p.includes(name) ? p.filter((x) => x !== name) : [...p, name]));
 
   return (
-    <div>
+    <div className="space-y-3">
       <div className="relative">
-        <svg
-          aria-hidden
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
+        <Search
+          size={19}
           className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
+        />
         <Input
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Examiner, institution or topic"
+          placeholder="Search by name or topic"
           aria-label="Search examiners"
-          className="!pl-10"
+          className="!rounded-[12px] !pl-11"
         />
       </div>
 
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-        <Chip active={!topic} onClick={() => setTopic(null)}>
-          All topics
-        </Chip>
+      <div className="flex items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => setPicked([])}
+          className="t-small-strong flex min-h-[44px] items-center gap-2 rounded-[12px] bg-brand px-4 text-on-brand active:scale-[0.98]"
+        >
+          <Funnel size={17} />
+          Filters
+          {picked.length ? (
+            <span className="t-caption-medium grid size-5 place-items-center rounded-full bg-surface text-brand">
+              {picked.length}
+            </span>
+          ) : null}
+        </button>
+
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setSortOpen((o) => !o)}
+            aria-expanded={sortOpen}
+            className="t-small-medium flex min-h-[44px] items-center gap-2 rounded-[12px] border border-line bg-surface px-3.5 text-strong"
+          >
+            {SORTS.find((s) => s.key === sort)?.label}
+            <ChevronDown size={16} className="text-muted" />
+          </button>
+          {sortOpen ? (
+            <ul className="fade absolute left-0 top-[48px] z-20 w-[190px] overflow-hidden rounded-[12px] border border-line bg-surface shadow-lg shadow-black/10">
+              {SORTS.map((s) => (
+                <li key={s.key}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSort(s.key);
+                      setSortOpen(false);
+                    }}
+                    className={`t-small w-full px-4 py-3 text-left ${
+                      s.key === sort ? "bg-selected text-brand" : "text-body"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+
+        <span className="t-meta ml-auto text-muted">{results.length} results</span>
+      </div>
+
+      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {topics.map((t) => (
-          <Chip key={t.id} active={topic === t.name} onClick={() => setTopic(t.name)}>
+          <Chip key={t.id} active={picked.includes(t.name)} onClick={() => toggle(t.name)}>
             {t.name}
           </Chip>
         ))}
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="text-[12.5px] text-muted">
-          {results.length} {results.length === 1 ? "examiner" : "examiners"}
-        </p>
-        <div className="flex gap-1 rounded-full border border-line bg-sunken p-1">
-          {SORTS.map((s) => (
-            <button
-              key={s.key}
-              type="button"
-              aria-pressed={sort === s.key}
-              onClick={() => setSort(s.key)}
-              className={`min-h-[32px] rounded-full px-3 text-[12px] font-semibold transition-colors duration-200 ${
-                sort === s.key ? "bg-surface text-strong shadow-sm" : "text-muted"
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-3">
+      <div className="space-y-3">
         {results.length ? (
           results.map((e) => <ExaminerCard key={e.id} e={e} topics={e.topics} />)
         ) : (
           <Empty
             title="No examiner matches that"
-            body="Try clearing the topic filter, or search by institution instead. New examiners join every week."
+            body="Try clearing the topic filters, or search by institution instead."
           />
         )}
       </div>

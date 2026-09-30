@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { TopBar } from "@/components/top-bar";
-import { Avatar, Badge, Card, Stars } from "@/components/ui";
+import { BackBar } from "@/components/back-bar";
+import { Bookmark, Verified } from "@/components/icons";
+import { Avatar, Card, Divider, Stars } from "@/components/ui";
 import { dayLabel, money, timeLabel } from "@/lib/format";
 import type { Examiner, Review, SessionType, Topic } from "@/lib/database.types";
 
@@ -36,107 +37,112 @@ export default async function ExaminerPage({ params }: { params: Promise<{ id: s
   const types = [...(e.session_types ?? [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
   return (
-    <>
-      <TopBar title={e.full_name} subtitle={e.institution ?? undefined} />
-      <main className="px-4 pb-6 pt-5">
-        <section className="rise flex gap-4">
-          <Avatar name={e.full_name} size={72} />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h1 className="truncate text-[19px] font-bold tracking-[-0.02em] text-strong">{e.full_name}</h1>
-              {e.verified ? <Badge tone="brand">Verified</Badge> : null}
-            </div>
-            <p className="mt-0.5 text-[13px] text-muted">{e.institution}</p>
-            <div className="mt-2 flex items-center gap-3">
-              <Stars rating={e.rating} count={e.review_count} />
-              {e.years_experience ? (
-                <span className="text-[12.5px] text-body">{e.years_experience} yrs examining</span>
-              ) : null}
+    <div className="min-h-dvh bg-page pb-[92px]">
+      <BackBar action={<Bookmark size={22} className="mr-2 text-strong" />} />
+      <main className="mx-auto max-w-[480px] space-y-3 px-4 pt-4">
+        <Card className="rise space-y-3">
+          <div className="flex gap-3.5">
+            <Avatar name={e.full_name} size={64} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <h1 className="truncate t-title-m text-strong">{e.full_name}</h1>
+                {e.verified ? <Verified size={17} className="shrink-0 text-brand" /> : null}
+              </div>
+              <p className="mt-0.5 t-meta text-muted">{e.institution}</p>
+              <div className="mt-1.5 flex items-center gap-3">
+                <Stars rating={e.rating} count={e.review_count} />
+                {e.years_experience ? (
+                  <span className="t-caption text-body">{e.years_experience} yrs examining</span>
+                ) : null}
+              </div>
             </div>
           </div>
-        </section>
+          {topics.length ? (
+            <div className="flex flex-wrap gap-1.5">
+              {topics.map((t) => (
+                <span key={t} className="t-caption rounded-full bg-tint px-3 py-1.5 text-brand">
+                  {t}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </Card>
 
-        <p className="mt-5 text-[14px] leading-relaxed">{e.bio}</p>
+        <Card className="space-y-2">
+          <h2 className="t-title-s text-strong">About</h2>
+          <p className="t-body text-body">{e.bio}</p>
+        </Card>
 
-        {topics.length ? (
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {topics.map((t) => (
-              <span key={t} className="rounded-full bg-sunken px-3 py-1.5 text-[12px] font-medium text-body">
-                {t}
-              </span>
-            ))}
-          </div>
-        ) : null}
-
-        <section className="mt-7">
-          <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-strong">Session types</h2>
-          <ul className="mt-3 space-y-2.5">
-            {types.map((t) => (
+        <Card padded={false} className="overflow-hidden">
+          <h2 className="t-title-s px-4 pt-4 text-strong">Session types</h2>
+          <ul className="mt-2">
+            {types.map((t, i) => (
               <li key={t.id}>
-                <Link
-                  href={`/book/${e.id}?type=${t.id}`}
-                  className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 transition-transform duration-200 active:scale-[0.985]"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[14.5px] font-semibold text-strong">{t.name}</p>
-                    <p className="mt-0.5 text-[12.5px] leading-snug">{t.description}</p>
-                    <p className="mt-1.5 text-[12px] font-medium text-muted">{t.duration_minutes} minutes</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[15px] font-bold tracking-[-0.02em] text-strong">
-                      {money(t.price_cents, t.currency)}
-                    </p>
-                    <span className="mt-1 inline-block text-[12px] font-semibold text-brand">Book</span>
-                  </div>
+                <Link href={`/book/${e.id}?type=${t.id}`} className="flex items-center gap-3 px-4 py-3.5 active:bg-selected">
+                  <span className="min-w-0 flex-1">
+                    <span className="block t-small-strong text-strong">{t.name}</span>
+                    <span className="mt-0.5 block t-meta text-body">{t.description}</span>
+                    <span className="mt-1 block t-caption text-muted">{t.duration_minutes} minutes</span>
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <span className="block t-price-m text-strong">{money(t.price_cents, t.currency)}</span>
+                    <span className="t-meta-strong text-brand">Book</span>
+                  </span>
                 </Link>
+                {i < types.length - 1 ? <Divider /> : null}
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
 
-        <section className="mt-7">
-          <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-strong">Next open slots</h2>
+        <Card className="space-y-3">
+          <h2 className="t-title-s text-strong">Next open slots</h2>
           {slots?.length ? (
-            <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+            <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
               {slots.map((s) => (
                 <Link
                   key={s.id}
                   href={`/book/${e.id}?slot=${s.id}`}
-                  className="shrink-0 rounded-xl border border-line bg-surface px-4 py-3 text-center active:scale-[0.97]"
+                  className="shrink-0 rounded-[10px] border border-line bg-surface px-4 py-2.5 text-center active:scale-[0.97]"
                 >
-                  <p className="text-[12px] font-medium text-muted">{dayLabel(s.starts_at)}</p>
-                  <p className="mt-0.5 text-[14px] font-semibold text-strong">{timeLabel(s.starts_at)}</p>
+                  <span className="block t-caption text-muted">{dayLabel(s.starts_at)}</span>
+                  <span className="block t-small-strong text-strong">{timeLabel(s.starts_at)}</span>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="mt-2 text-[13px]">No open slots in the next two weeks. Check back on Monday.</p>
+            <p className="t-meta text-body">No open slots in the next two weeks. Check back on Monday.</p>
           )}
-        </section>
+        </Card>
 
         {reviews?.length ? (
-          <section className="mt-7">
-            <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-strong">What candidates say</h2>
-            <ul className="mt-3 space-y-2.5">
-              {(reviews as Review[]).map((r) => (
-                <Card key={r.id} as="li">
-                  <Stars rating={r.rating} />
-                  <p className="mt-2 text-[13.5px] leading-relaxed">{r.body}</p>
-                </Card>
-              ))}
-            </ul>
-          </section>
+          <Card className="space-y-3">
+            <h2 className="t-title-s text-strong">What candidates say</h2>
+            {(reviews as Review[]).map((r) => (
+              <div key={r.id} className="space-y-1.5 border-t border-line-subtle pt-3 first:border-0 first:pt-0">
+                <Stars rating={r.rating} />
+                <p className="t-small text-body">{r.body}</p>
+              </div>
+            ))}
+          </Card>
         ) : null}
+      </main>
 
-        <div className="sticky bottom-[88px] mt-8 rounded-2xl border border-line bg-surface/95 p-3 backdrop-blur-md">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto flex max-w-[480px] items-center gap-3 px-4 py-3">
+          <span className="shrink-0">
+            <span className="block t-caption text-muted">From</span>
+            <span className="t-price-m text-strong">{money(e.from_price_cents, e.currency)}</span>
+            <span className="t-caption text-muted">/hr</span>
+          </span>
           <Link
             href={`/book/${e.id}`}
-            className="flex min-h-[52px] items-center justify-center rounded-xl bg-brand text-[15px] font-semibold text-white active:scale-[0.98]"
+            className="t-button flex min-h-[52px] flex-1 items-center justify-center rounded-[12px] bg-brand text-on-brand active:scale-[0.98]"
           >
-            Book with {e.full_name.split(" ").slice(-1)[0]} · from {money(e.from_price_cents, e.currency)}
+            Book a session
           </Link>
         </div>
-      </main>
-    </>
+      </div>
+    </div>
   );
 }

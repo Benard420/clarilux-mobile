@@ -8,10 +8,9 @@ import { Button } from "@/components/ui";
 export function SignOut() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-
   return (
     <Button
-      variant="secondary"
+      tone="secondary"
       disabled={busy}
       onClick={async () => {
         setBusy(true);

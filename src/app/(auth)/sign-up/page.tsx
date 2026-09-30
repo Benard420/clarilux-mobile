@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ChevronLeft } from "@/components/icons";
 import { Button, Field, Input } from "@/components/ui";
 
 export default function SignUp() {
@@ -20,11 +21,13 @@ export default function SignUp() {
     if (weak) return;
     setBusy(true);
     setError(null);
-    const supabase = createClient();
-    const { data, error: err } = await supabase.auth.signUp({
+    const { data, error: err } = await createClient().auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+      },
     });
     if (err) {
       setError(err.message);
@@ -41,16 +44,15 @@ export default function SignUp() {
 
   return (
     <main className="rise">
-      <Link href="/welcome" className="text-[13px] font-semibold text-brand">
-        Back
+      <Link href="/welcome" aria-label="Back" className="-ml-2 grid size-11 place-items-center text-strong">
+        <ChevronLeft size={22} />
       </Link>
-      <h1 className="mt-6 text-[28px] font-bold leading-tight tracking-[-0.025em] text-strong">
-        Create your account
-      </h1>
-      <p className="mt-2 text-[14px]">Two minutes, then you can book your first station.</p>
+
+      <h1 className="t-display mt-4 text-strong">Create your account</h1>
+      <p className="t-body mt-1.5 text-body">Two minutes, then you can book your first station.</p>
 
       <form
-        className="mt-8 space-y-4"
+        className="mt-7 space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           void submit();
@@ -84,7 +86,7 @@ export default function SignUp() {
           label="Password"
           htmlFor="password"
           hint="Eight characters or more."
-          error={weak ? "Use at least eight characters." : error ?? undefined}
+          error={weak ? "Use at least eight characters." : (error ?? undefined)}
         >
           <Input
             id="password"
@@ -102,12 +104,12 @@ export default function SignUp() {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-[12px] leading-relaxed text-muted">
+      <p className="t-caption mt-5 text-center text-muted">
         Concept build for portfolio review. Do not enter details you would not want in a sample
         database.
       </p>
 
-      <p className="mt-5 text-center text-[13px]">
+      <p className="t-meta mt-5 text-center text-body">
         Already registered?{" "}
         <Link href="/sign-in" className="font-semibold text-brand">
           Sign in

@@ -1,49 +1,38 @@
-import { ButtonLink } from "@/components/ui";
+import { ButtonLink, Card } from "@/components/ui";
+import { Wordmark } from "@/components/brand-mark";
 
 const points = [
-  { t: "Examiners who actually sit on panels", b: "Every examiner lists their institution, years on panels and what they mark hardest." },
-  { t: "The exam room, not a video call", b: "Timed stations, one question at a time, the same pressure as the day itself." },
-  { t: "A report you can act on tonight", b: "Four domain scores, the three things to fix, and what to book next." },
+  ["Examiners who sit on real panels", "Institution, years on panels, and what they mark hardest."],
+  ["The exam room, not a video call", "Timed stations, one question at a time."],
+  ["A report you can act on tonight", "Four domain scores and the three things to fix."],
 ];
 
 export default function Welcome() {
   return (
-    <main className="rise flex min-h-[calc(100dvh-120px)] flex-col">
-      <div className="flex items-center gap-2.5">
-        <span className="grid size-10 place-items-center rounded-xl bg-brand text-white">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <circle cx="11" cy="10" r="6" />
-            <path d="M15.5 14.5L20 20M8 10h6" />
-          </svg>
-        </span>
-        <span className="text-[18px] font-bold tracking-[-0.02em] text-strong">Clarilux</span>
-      </div>
+    <main className="rise flex min-h-[calc(100dvh-56px)] flex-col">
+      <Wordmark />
 
-      <h1 className="mt-10 text-[34px] font-bold leading-[1.1] tracking-[-0.03em] text-strong">
-        Sit the oral board
-        <br />
-        before it sits you.
-      </h1>
-      <p className="mt-4 text-[15px] leading-relaxed">
+      <h1 className="t-display mt-8 text-strong">Sit the oral board before it sits you.</h1>
+      <p className="t-body mt-2.5 text-body">
         Book a real examiner, take the mock under exam conditions, and leave with a marked report
         instead of a vague feeling about how it went.
       </p>
 
-      <ul className="mt-8 space-y-3">
-        {points.map((p) => (
-          <li key={p.t} className="rounded-2xl border border-line bg-surface p-4">
-            <p className="text-[14px] font-semibold text-strong">{p.t}</p>
-            <p className="mt-1 text-[13px] leading-relaxed">{p.b}</p>
-          </li>
+      <ul className="mt-6 space-y-2.5">
+        {points.map(([title, body]) => (
+          <Card key={title} as="li" className="space-y-1">
+            <p className="t-small-strong text-strong">{title}</p>
+            <p className="t-meta text-body">{body}</p>
+          </Card>
         ))}
       </ul>
 
       <div className="mt-auto space-y-2.5 pt-10">
         <ButtonLink href="/sign-up">Create an account</ButtonLink>
-        <ButtonLink href="/sign-in" variant="secondary">
+        <ButtonLink href="/sign-in" tone="secondary">
           I already have one
         </ButtonLink>
-        <p className="pt-1 text-center text-[12px] text-muted">
+        <p className="t-caption pt-1 text-center text-muted">
           Concept build. Sample examiners, no real payments.
         </p>
       </div>

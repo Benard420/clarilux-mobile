@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PROTECTED = ["/home", "/discover", "/bookings", "/profile", "/book", "/booking", "/room", "/onboarding", "/notifications"];
+const PROTECTED = ["/dashboard", "/oral-board", "/marketplace", "/questions", "/more", "/book", "/booking", "/room", "/onboarding", "/notifications"];
 const AUTH_ONLY = ["/welcome", "/sign-in", "/sign-up"];
+const ALWAYS_OPEN = ["/auth/callback", "/auth/confirm"];
 
 export default async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
@@ -20,8 +21,10 @@ export default async function proxy(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
+  if (ALWAYS_OPEN.some((p) => path.startsWith(p))) return response;
+
+  const { data } = await supabase.auth.getUser();
 
   if (!data.user && PROTECTED.some((p) => path.startsWith(p))) {
     const to = request.nextUrl.clone();
@@ -31,7 +34,7 @@ export default async function proxy(request: NextRequest) {
 
   if (data.user && AUTH_ONLY.some((p) => path.startsWith(p))) {
     const to = request.nextUrl.clone();
-    to.pathname = "/home";
+    to.pathname = "/dashboard";
     return NextResponse.redirect(to);
   }
 
