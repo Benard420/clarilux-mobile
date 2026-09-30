@@ -122,7 +122,9 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
 
         {r.improvements?.length ? (
           <section className="mt-4 rounded-2xl border border-line bg-surface p-5">
-            <h2 className="text-[15px] font-semibold text-strong">Fix these three things</h2>
+            <h2 className="text-[15px] font-semibold text-strong">
+              {r.improvements.length === 1 ? "Fix this" : `Fix these ${r.improvements.length === 2 ? "two" : r.improvements.length === 3 ? "three" : r.improvements.length} things`}
+            </h2>
             <ol className="mt-2.5 space-y-3">
               {r.improvements.map((s, i) => (
                 <li key={s} className="flex gap-3 text-[13.5px] leading-relaxed">

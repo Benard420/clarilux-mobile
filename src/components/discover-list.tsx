@@ -8,9 +8,9 @@ import type { Examiner, Topic } from "@/lib/database.types";
 type Row = Examiner & { topics: string[] };
 
 const SORTS = [
-  { key: "rating", label: "Top rated" },
-  { key: "price", label: "Lowest price" },
-  { key: "experience", label: "Most experienced" },
+  { key: "rating", label: "Rating" },
+  { key: "price", label: "Price" },
+  { key: "experience", label: "Experience" },
 ] as const;
 
 export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: Topic[] }) {

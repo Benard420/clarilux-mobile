@@ -40,8 +40,9 @@ export function countdown(iso: string) {
   const mins = Math.round(ms / 60000);
   if (mins < 60) return `in ${mins} min`;
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `in ${hours} hr`;
-  return `in ${Math.round(hours / 24)} days`;
+  if (hours < 24) return `in ${hours} ${hours === 1 ? "hour" : "hours"}`;
+  const days = Math.round(hours / 24);
+  return `in ${days} ${days === 1 ? "day" : "days"}`;
 }
 
 export function mmss(seconds: number) {
