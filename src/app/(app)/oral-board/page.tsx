@@ -121,7 +121,7 @@ export default async function OralBoardPage() {
             {done.map((b) => (
               <Link key={b.id} href={`/room/${b.id}/report`} className="block active:scale-[0.99]">
                 <Card className="flex items-center gap-3">
-                  <Avatar name={b.examiners?.full_name ?? "Examiner"} size={44} />
+                  <Avatar name={b.examiners?.full_name ?? "Examiner"} size={44} src={b.examiners?.avatar_url} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate t-small-strong text-strong">{b.examiners?.full_name}</p>
                     <p className="t-caption text-muted">

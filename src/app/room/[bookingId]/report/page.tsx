@@ -96,7 +96,7 @@ export default async function Report({ params }: { params: Promise<{ bookingId: 
 
         {r.examiner_notes ? (
           <section className="mt-3 flex gap-3.5 rounded-[12px] border border-line bg-tint p-4">
-            <Avatar name={b.examiners?.full_name ?? "Examiner"} size={40} />
+            <Avatar name={b.examiners?.full_name ?? "Examiner"} size={40} src={b.examiners?.avatar_url} />
             <div className="min-w-0">
               <p className="t-meta-strong text-strong">{b.examiners?.full_name}</p>
               <p className="t-small mt-1 text-body">{r.examiner_notes}</p>

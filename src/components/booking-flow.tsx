@@ -197,7 +197,7 @@ export function BookingFlow({
             <h1 className="t-title-l text-strong">Check and confirm</h1>
 
             <div className="mt-4 flex items-center gap-3 rounded-[12px] border border-line bg-surface p-4">
-              <Avatar name={examiner.full_name} size={44} />
+              <Avatar name={examiner.full_name} size={44} src={examiner.avatar_url} />
               <div className="min-w-0">
                 <p className="truncate t-small-strong text-strong">{examiner.full_name}</p>
                 <p className="t-caption text-muted">{examiner.institution}</p>

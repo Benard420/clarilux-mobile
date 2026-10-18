@@ -42,7 +42,7 @@ export default async function ExaminerPage({ params }: { params: Promise<{ id: s
       <main className="mx-auto max-w-[480px] space-y-3 px-4 pt-4">
         <Card className="rise space-y-3">
           <div className="flex gap-3.5">
-            <Avatar name={e.full_name} size={64} />
+            <Avatar name={e.full_name} size={64} src={e.avatar_url} />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <h1 className="truncate t-title-m text-strong">{e.full_name}</h1>

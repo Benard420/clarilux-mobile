@@ -34,7 +34,7 @@ export default async function MorePage() {
       <AppBar name={profile?.full_name ?? "Candidate"} />
       <main className="space-y-3 px-4 pt-4">
         <Card className="flex items-center gap-3.5">
-          <Avatar name={profile?.full_name ?? "Candidate"} size={56} />
+          <Avatar name={profile?.full_name ?? "Candidate"} size={56} src={profile?.avatar_url} />
           <div className="min-w-0">
             <p className="truncate t-title-s text-strong">{profile?.full_name ?? "Candidate"}</p>
             <p className="truncate t-caption text-muted">{auth.user.email}</p>

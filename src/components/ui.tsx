@@ -158,24 +158,43 @@ export function Textarea({
 
 /* ---------------- small parts ---------------- */
 
-export function Avatar({ name, size = 48 }: { name: string; size?: number }) {
+export function Avatar({
+  name,
+  size = 48,
+  src,
+}: {
+  name: string;
+  size?: number;
+  src?: string | null;
+}) {
   const letters = name
     .replace(/^Dr\.?\s+/i, "")
     .split(/\s+/)
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
-  const hue = [...name].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
   return (
     <span
       aria-hidden
-      className="grid shrink-0 place-items-center rounded-full font-semibold text-white"
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.34,
-        background: `linear-gradient(140deg, hsl(${hue} 48% 40%), hsl(${(hue + 40) % 360} 55% 27%))`,
-      }}
+      className="grid shrink-0 place-items-center rounded-full bg-tint font-semibold text-brand"
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}
     >
       {letters}
     </span>

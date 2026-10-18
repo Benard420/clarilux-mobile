@@ -94,7 +94,7 @@ export function Lobby({ booking }: { booking: BookingWithExaminer }) {
 
       <section className="rise mt-7 flex flex-col items-center">
         <span className="relative">
-          <Avatar name={booking.examiners?.full_name ?? "Examiner"} size={84} />
+          <Avatar name={booking.examiners?.full_name ?? "Examiner"} size={84} src={booking.examiners?.avatar_url} />
           <span className="pulse-ring absolute inset-0 rounded-full" />
         </span>
         <h1 className="t-title-l mt-4 text-strong">{booking.examiners?.full_name}</h1>

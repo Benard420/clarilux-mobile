@@ -126,7 +126,7 @@ export function ExamRunner({
     <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
       <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-md">
         <div className="flex items-center gap-3 px-4 py-3">
-          <Avatar name={booking.examiners?.full_name ?? "Examiner"} size={34} />
+          <Avatar name={booking.examiners?.full_name ?? "Examiner"} size={34} src={booking.examiners?.avatar_url} />
           <div className="min-w-0 flex-1">
             <p className="truncate t-meta-strong text-strong">{booking.examiners?.full_name}</p>
             <p className="t-caption text-muted">

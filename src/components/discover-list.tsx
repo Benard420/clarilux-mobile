@@ -2,8 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { ExaminerCard } from "@/components/examiner-card";
-import { ChevronDown, Funnel, Search } from "@/components/icons";
-import { Chip, Empty, Input } from "@/components/ui";
+import { ChevronDown, Close, Funnel, Search } from "@/components/icons";
+import { Empty, Input } from "@/components/ui";
+import {
+  countFilters,
+  EMPTY_FILTERS,
+  FilterSheet,
+  PRICE_BANDS,
+  type Filters,
+} from "@/components/filter-sheet";
 import type { Examiner, Topic } from "@/lib/database.types";
 
 type Row = Examiner & { topics: string[] };
@@ -14,32 +21,59 @@ const SORTS = [
   { key: "experience", label: "Most experienced" },
 ] as const;
 
+function apply(rows: Row[], q: string, f: Filters) {
+  const needle = q.trim().toLowerCase();
+  const band = f.price ? PRICE_BANDS.find((b) => b.label === f.price) : null;
+  return rows.filter((e) => {
+    if (f.topics.length && !f.topics.some((t) => e.topics.includes(t))) return false;
+    if (f.availability && e.availability_label !== f.availability) return false;
+    if (band && (e.from_price_cents < band.min || e.from_price_cents >= band.max)) return false;
+    if (f.rating !== null && (e.rating ?? 0) < f.rating) return false;
+    if (
+      needle &&
+      ![e.full_name, e.institution, e.headline, ...e.topics]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(needle))
+    )
+      return false;
+    return true;
+  });
+}
+
 export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: Topic[] }) {
   const [q, setQ] = useState("");
-  const [picked, setPicked] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [sort, setSort] = useState<(typeof SORTS)[number]["key"]>("rating");
   const [sortOpen, setSortOpen] = useState(false);
 
   const results = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    const rows = examiners.filter((e) => {
-      const matchesTopic = !picked.length || picked.some((p) => e.topics.includes(p));
-      const matchesText =
-        !needle ||
-        [e.full_name, e.institution, e.headline, ...e.topics]
-          .filter(Boolean)
-          .some((v) => String(v).toLowerCase().includes(needle));
-      return matchesTopic && matchesText;
-    });
+    const rows = apply(examiners, q, filters);
     return [...rows].sort((a, b) => {
       if (sort === "price") return a.from_price_cents - b.from_price_cents;
       if (sort === "experience") return (b.years_experience ?? 0) - (a.years_experience ?? 0);
       return (b.rating ?? 0) - (a.rating ?? 0);
     });
-  }, [examiners, q, picked, sort]);
+  }, [examiners, q, filters, sort]);
 
-  const toggle = (name: string) =>
-    setPicked((p) => (p.includes(name) ? p.filter((x) => x !== name) : [...p, name]));
+  const liveCount = useMemo(() => apply(examiners, q, filters).length, [examiners, q, filters]);
+  const activeCount = countFilters(filters);
+
+  const activeChips: { label: string; clear: () => void }[] = [
+    ...filters.topics.map((t) => ({
+      label: t,
+      clear: () => setFilters((f) => ({ ...f, topics: f.topics.filter((x) => x !== t) })),
+    })),
+    ...(filters.availability
+      ? [{ label: filters.availability, clear: () => setFilters((f) => ({ ...f, availability: null })) }]
+      : []),
+    ...(filters.price
+      ? [{ label: filters.price, clear: () => setFilters((f) => ({ ...f, price: null })) }]
+      : []),
+    ...(filters.rating !== null
+      ? [{ label: `${filters.rating}+`, clear: () => setFilters((f) => ({ ...f, rating: null })) }]
+      : []),
+  ];
 
   return (
     <div className="space-y-3">
@@ -61,19 +95,20 @@ export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: 
       <div className="flex items-center gap-2.5">
         <button
           type="button"
-          onClick={() => setPicked([])}
-          className="t-small-strong flex min-h-[44px] items-center gap-2 rounded-[12px] bg-brand px-4 text-on-brand active:scale-[0.98]"
+          onClick={() => setSheetOpen(true)}
+          aria-haspopup="dialog"
+          className="t-small-strong flex min-h-[44px] shrink-0 items-center gap-2 rounded-[12px] bg-brand px-4 text-on-brand active:scale-[0.98]"
         >
           <Funnel size={17} />
           Filters
-          {picked.length ? (
+          {activeCount ? (
             <span className="t-caption-medium grid size-5 place-items-center rounded-full bg-surface text-brand">
-              {picked.length}
+              {activeCount}
             </span>
           ) : null}
         </button>
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setSortOpen((o) => !o)}
@@ -105,16 +140,24 @@ export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: 
           ) : null}
         </div>
 
-        <span className="t-meta ml-auto text-muted">{results.length} results</span>
+        <span className="t-meta ml-auto shrink-0 text-muted">{results.length} results</span>
       </div>
 
-      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-        {topics.map((t) => (
-          <Chip key={t.id} active={picked.includes(t.name)} onClick={() => toggle(t.name)}>
-            {t.name}
-          </Chip>
-        ))}
-      </div>
+      {activeChips.length ? (
+        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          {activeChips.map((c) => (
+            <button
+              key={c.label}
+              type="button"
+              onClick={c.clear}
+              className="t-meta-medium flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-full bg-tint px-3.5 text-brand"
+            >
+              {c.label}
+              <Close size={14} />
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="space-y-3">
         {results.length ? (
@@ -122,10 +165,19 @@ export function DiscoverList({ examiners, topics }: { examiners: Row[]; topics: 
         ) : (
           <Empty
             title="No examiner matches that"
-            body="Try clearing the topic filters, or search by institution instead."
+            body="Loosen a filter or clear the search. Every examiner takes at least one topic outside their headline."
           />
         )}
       </div>
+
+      <FilterSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        topics={topics}
+        value={filters}
+        onChange={setFilters}
+        resultCount={liveCount}
+      />
     </div>
   );
 }

@@ -158,12 +158,27 @@ body {
   height: 100%;
 }
 
+html {
+  /* iOS Safari inflates text on its own unless this is pinned, which is what
+     made the type ramp drift away from the Figma sizes on a real phone. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--page);
   color: var(--body);
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
+  /* A single overflowing row must never make the whole page pan sideways. */
+  overflow-x: hidden;
+}
+
+/* Long unbroken strings (emails, institution names) wrap instead of forcing
+   their row wider than the phone. */
+p, h1, h2, h3, h4, dt, dd, span, li, button, a {
+  overflow-wrap: anywhere;
 }
 
 * {

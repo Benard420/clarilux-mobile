@@ -52,7 +52,7 @@ export default async function BookingDetail({
         ) : null}
 
         <section className="mt-5 flex items-center gap-3.5 rounded-[12px] border border-line bg-surface p-4">
-          <Avatar name={b.examiners?.full_name ?? "Examiner"} size={54} />
+          <Avatar name={b.examiners?.full_name ?? "Examiner"} size={54} src={b.examiners?.avatar_url} />
           <div className="min-w-0 flex-1">
             <p className="truncate t-title-s text-strong">{b.examiners?.full_name}</p>
             <p className="t-caption text-muted">{b.examiners?.institution}</p>

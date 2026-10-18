@@ -62,7 +62,7 @@ export default async function DashboardPage() {
               </span>
             </div>
             <div className="flex gap-3 px-4 pb-3.5 pt-3">
-              <Avatar name={next.examiners.full_name} size={46} />
+              <Avatar name={next.examiners.full_name} size={46} src={next.examiners.avatar_url} />
               <div className="min-w-0 flex-1">
                 <p className="truncate t-title-s text-on-brand">{next.examiners.full_name}</p>
                 <p className="t-meta text-on-brand-muted">
